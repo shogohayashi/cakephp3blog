@@ -48,7 +48,67 @@ class AppController extends Controller
          * Enable the following components for recommended CakePHP security settings.
          * see https://book.cakephp.org/3.0/en/controllers/components/security.html
          */
-        //$this->loadComponent('Security');
-        //$this->loadComponent('Csrf');
+        $this->loadComponent('Security');
+        $this->loadComponent('Csrf');
+
+        // adminのみ認証する。
+        if($this->request->getParam('prefix')){
+            $this->loadComponent('Auth',[
+                'authorize' => ['Controller'],
+                'authenticate'=>[
+                    'Form'=>[
+                        'userModel'=>'Users',
+                    ],
+                ],
+                'loginRedirect' => [
+                    'controller' => 'Articles',
+                    'action' => 'index',
+                ],
+                'unauthorizedRedirect' => [
+                    'controller' => 'Users',
+                    'action' => 'login',
+                ],
+                'authError'=>'ログインしてください。'
+            ]);
+        }
+    }
+    public function isAuthorized($user)
+    {
+        // Admin can access every action
+        if ($user['role'] === 'admin') {
+            return true;
+        }
+        return true;
+        // // User access
+        // if (isset($user['role'])) {
+        //     if(
+        //           $this->request->getParam('controller')==='Sections'
+        //         ||($this->request->getParam('controller')==='Comments'&&$this->request->getParam('action')!=='add')
+        //         ||($this->request->getParam('controller')==='News'&&($this->request->getParam('action')!=='view'))
+        //         ||($this->request->getParam('controller')==='Users'
+        //             &&(
+        //                 $this->request->getParam('action')==='index'
+        //                 ||$this->request->getParam('action')==='add'
+        //             ))
+        //     ){
+        //         $this->Auth->config('authError','アクセス権限がありません。');
+        //         return false;
+        //     }
+        //     return true;
+        // }
+        // // Default deny
+        // return false;
+    }
+
+    public function beforeFilter(Event $event)
+    {
+
+    }
+
+    // redirect dashboard if logged in
+    public function logoutOnly(){
+        if($this->Auth->user('id')){
+            // return $this->redirect(['controller'=>'articles','action'=>'index']);
+        }
     }
 }
