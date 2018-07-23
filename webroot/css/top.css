@@ -184,7 +184,8 @@ body {
     overflow: hidden;}
   #index li {
     position: relative;
-    height: 2em;
+    min-height: 2em;
+    margin-bottom:0.5em;
     font-size: 20px;
     font-family: 'Hiragino Mincho ProN', serif;}
     #index li .title {
